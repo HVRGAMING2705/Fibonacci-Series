@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeyForge — Desktop Automation Toolkit</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0c10'/><text x='50' y='70' font-size='48' text-anchor='middle' fill='%23b8f53d' font-family='monospace' font-weight='bold'>⌨</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0c10;--panel:#12151c;--line:rgba(255,255,255,.09);--txt:#e8eaed;--mut:#9aa0a6;--acc:#b8f53d;--acc2:#7dd3fc}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:960px;margin:0 auto;padding:48px 20px 80px}
+.badge{display:inline-block;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);border:1px solid rgba(184,245,61,.35);padding:6px 14px;border-radius:99px;margin-bottom:18px}
+h1{font-size:clamp(32px,5vw,54px);font-weight:800;letter-spacing:-.02em;margin-bottom:12px}
+h1 span{color:var(--acc)}
+.sub{color:var(--mut);font-size:17px;max-width:640px;line-height:1.6;margin-bottom:36px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.feat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;transition:transform .25s,border-color .25s}
+.feat:hover{transform:translateY(-4px);border-color:rgba(184,245,61,.4)}
+.feat h4{color:var(--acc2);font-size:14px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.feat p{color:var(--mut);font-size:14px;line-height:1.6}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:16px}
+.card h3{font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--acc);margin-bottom:14px}
+.seq{background:#05070a;border:1px solid var(--line);border-radius:10px;padding:16px;font-family:ui-monospace,monospace;font-size:14px;line-height:2}
+.seq .k{display:inline-block;background:rgba(184,245,61,.12);border:1px solid rgba(184,245,61,.35);color:var(--acc);border-radius:6px;padding:2px 10px;margin:2px}
+.seq .w{color:var(--mut)}
+.row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+button{background:var(--acc);color:#0a0c10;border:none;border-radius:10px;padding:11px 20px;font-weight:700;font-size:14px;cursor:pointer}
+button.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+#simlog{background:#05070a;border:1px solid var(--line);border-radius:10px;padding:14px;font-family:ui-monospace,monospace;font-size:13px;min-height:90px;margin-top:12px;line-height:1.8;color:var(--mut)}
+#simlog b{color:var(--acc)}
+pre{background:#05070a;border:1px solid var(--line);border-radius:10px;padding:16px;font-size:13px;overflow-x:auto;line-height:1.7;color:var(--mut)}
+pre b{color:var(--acc)}
+.note{margin-top:20px;border:1px solid rgba(248,113,113,.35);border-radius:12px;padding:16px 18px;color:var(--mut);font-size:13px;line-height:1.7}
+.note b{color:#f87171}
+.links{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+.links a{color:var(--txt);text-decoration:none;border:1px solid var(--line);padding:11px 20px;border-radius:10px;font-size:14px}
+.links a:hover{border-color:var(--acc)}
+footer{margin-top:48px;color:var(--mut);font-size:13px;text-align:center}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+.reveal.on{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="badge reveal">Auto-Key-Spam · KeyForge Automation</div>
+<h1 class="reveal">Desktop automation, <span>done right.</span></h1>
+<p class="sub reveal">KeyForge turns raw key-pressing into a real toolkit: JSON sequences, randomized human-like intervals, per-window targeting, a global kill-switch, and dry-run simulation. Try the sequence simulator below.</p>
+
+<div class="grid">
+<div class="feat reveal"><h4>JSON sequences</h4><p>Define key sequences as data — version-controlled, shareable, editable.</p></div>
+<div class="feat reveal"><h4>Human-like timing</h4><p>Randomized intervals between presses, no robotic patterns.</p></div>
+<div class="feat reveal"><h4>Kill-switch</h4><p>Esc aborts instantly, F9 pauses. Automation never runs away from you.</p></div>
+<div class="feat reveal"><h4>Window targeting</h4><p>Send keys only to the intended application window.</p></div>
+<div class="feat reveal"><h4>Dry-run mode</h4><p>Simulate the full sequence with zero side effects before going live.</p></div>
+<div class="feat reveal"><h4>Action logging</h4><p>Every press timestamped and logged for audit and debugging.</p></div>
+</div>
+
+<div class="card reveal"><h3>Sequence simulator (dry-run)</h3>
+<div class="seq"><span class="k">ctrl</span><span class="k">s</span> <span class="w">→ wait 0.4s →</span> <span class="k">alt</span><span class="k">tab</span> <span class="w">→ wait 1.2s →</span> <span class="k">F5</span></div>
+<div class="row"><button onclick="simulate()">Run dry-run</button><button class="ghost" onclick="document.getElementById('simlog').innerHTML='Log cleared.'">Clear</button></div>
+<div id="simlog">Press "Run dry-run" to simulate…</div></div>
+
+<div class="card reveal"><h3>sequences/example.json</h3>
+<pre>{
+  "name": "save-and-refresh",
+  "steps": [
+    {"keys": ["ctrl", "s"], "wait_after": 0.4},
+    {"keys": ["alt", "tab"], "wait_after": 1.2},
+    {"keys": ["F5"], "wait_after": 0.0}
+  ],
+  "jitter": 0.15,
+  "kill_key": "esc",
+  "pause_key": "f9"
+}</pre></div>
+
+<div class="note reveal"><b>Responsible use:</b> KeyForge is built for legitimate automation — accessibility assistance, UI testing, and productivity workflows. Do not use it to spam, harass, or violate any platform's terms of service.</div>
+
+<div class="links reveal">
+<a href="https://github.com/HVRGAMING2705/Auto-Key-Spam">View source on GitHub</a>
+<a href="https://github.com/HVRGAMING2705/Auto-Key-Spam/blob/main/keyforge.py">keyforge.py</a>
+<a href="https://github.com/HVRGAMING2705/Auto-Key-Spam/blob/main/cli.py">cli.py</a>
+</div>
+<footer>Built by Vikranth Reddy · KeyForge Automation</footer>
+</div>
+<script>
+function simulate(){const log=document.getElementById('simlog');log.innerHTML='';
+const steps=[['[0.00s]','PRESS <b>ctrl+s</b> → window: active'],['[0.42s]','WAIT 0.4s (+jitter 0.02s)'],['[0.44s]','PRESS <b>alt+tab</b> → window: active'],['[1.61s]','WAIT 1.2s (+jitter 0.01s)'],['[1.62s]','PRESS <b>F5</b> → window: active'],['[1.62s]','<b>DRY-RUN COMPLETE</b> — 0 real key events sent']];
+let i=0;const t=setInterval(()=>{if(i>=steps.length){clearInterval(t);return}
+log.innerHTML+=`<div>${steps[i][0]} ${steps[i][1]}</div>`;i++},450)}
+const io=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('on')),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
