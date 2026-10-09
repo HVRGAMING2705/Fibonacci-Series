@@ -1,63 +1,46 @@
-# KeyForge Automation
+# Fibonacci Algorithms Lab
 
-The original repo pressed one key on a fixed loop. KeyForge is a real
-desktop-automation utility: configurable key sequences, human-like
-randomized timing, per-window targeting, a global kill-switch, action
-logging, and a dry-run mode that never touches your keyboard.
+The original notebook printed a Fibonacci series. This lab implements
+**five** algorithms, benchmarks them head-to-head, visualizes golden-ratio
+convergence, and applies the math to Fibonacci retracement.
 
-## Legitimate uses
+## Algorithms (`fibonacci.py`)
 
-- **Accessibility**: automating repetitive input for users with limited
-  mobility
-- **UI testing**: scripted input sequences for QA of desktop apps
-- **Productivity**: boilerplate typing, form filling on your own machine
-- **Gaming**: only where the game's terms explicitly allow automation
-
-## Responsible use
-
-Do not use KeyForge to spam chats, evade rate limits, cheat in games
-where automation is prohibited, or interact with systems you do not own
-or have permission to automate. You are responsible for complying with
-the terms of service of every application you target. The kill-switch
-(Esc by default) and pyautogui failsafe (mouse to screen corner) exist
-so you can always stop a runaway sequence instantly.
-
-## Features
-
-- JSON key-sequence files (`sequences/example.json`): keys, text typing,
-  hotkeys, per-step intervals (fixed or randomized `[min, max]`), repeats
-- Per-window targeting: activate a window by title before running
-- Global hotkeys: F9 pause/resume, Esc emergency stop (`keyboard` lib)
-- Action log with timestamps (`keyforge.log`)
-- `--dry-run`: validate a sequence end-to-end with zero key injection
-- Countdown before live runs
+- `fib_naive` — textbook tree recursion, O(phi^n). Kept as a cautionary tale.
+- `fib_memoized` — top-down DP, O(n)
+- `fib_iterative` — bottom-up loop, O(n) time / O(1) space
+- `fib_matrix` — exponentiation of [[1,1],[1,0]], O(log n), exact at any n
+- `fib_binet` — closed form, O(1), exact only to n ~ 70 (float precision)
 
 ## How to run
 
 ```bash
-pip install -r requirements.txt   # pyautogui, keyboard (live runs only)
-python cli.py sequences/example.json --dry-run   # safe: presses nothing
-python cli.py sequences/example.json             # live run
-python test_keyforge.py                          # headless test suite
+pip install -r requirements.txt   # only matplotlib
+python benchmark.py               # timing shootout (small n and large n)
+python golden_ratio.py            # writes golden_ratio.png
+python retracement.py             # retracement/extension price levels
 ```
 
-## Sequence format
-
-```json
-{
-  "name": "demo",
-  "window": "Untitled - Notepad",
-  "countdown": 3,
-  "steps": [
-    {"keys": ["h", "e", "l", "l", "o"], "interval": [0.05, 0.15], "repeats": 3},
-    {"type": "text", "text": "hello", "interval": 0.5},
-    {"hotkey": ["ctrl", "s"], "interval": [1.0, 2.0]}
-  ]
-}
+```python
+from fibonacci import fib
+fib(1000, method="matrix")   # exact, instant
+fib(30, method="naive")      # exact, ~1M recursive calls — feel the pain
 ```
 
-## Requirements
+## Files
 
-Live runs need a display plus `pyautogui` and `keyboard`
-(`keyboard` needs admin/root on Linux for global hotkeys).
-Tests and `--dry-run` need nothing but the standard library.
+- `fibonacci.py` — the five implementations + `golden_ratio_approximations`
+- `benchmark.py` — `timeit` comparison; verifies exactness across methods
+- `golden_ratio.py` — matplotlib plot of F(n+1)/F(n) -> phi
+- `retracement.py` — Fibonacci retracement/extension demo (educational,
+  not financial advice)
+- `complexity.md` — written complexity analysis and key insights
+
+## Sample output
+
+```
+Small n (all methods incl. naive recursion):
+  n= 30: naive=  154.321ms  memoized=   0.004ms  iterative=   0.003ms  matrix=   0.006ms  binet=   0.001ms
+Large n (naive excluded — it would never finish):
+  n=100,000: memoized=  42.1ms  iterative=  38.9ms  matrix=   5.2ms
+```
