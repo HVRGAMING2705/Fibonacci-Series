@@ -70,6 +70,8 @@ th,td{padding:8px 6px;font-size:13px;white-space:nowrap}
 button{min-height:44px}
 }
 </style>
+<meta property="og:image" content="https://fibonacci-series-olive.vercel.app/og.png">
+<meta name="twitter:image" content="https://fibonacci-series-olive.vercel.app/og.png">
 </head>
 <body>
 <div class="wrap">
@@ -92,7 +94,8 @@ button{min-height:44px}
 <a href="https://github.com/HVRGAMING2705/Fibonacci-Series/blob/main/fibonacci.py">fibonacci.py</a>
 <a href="https://github.com/HVRGAMING2705/Fibonacci-Series/blob/main/benchmark.py">benchmark.py</a>
 </div>
-<footer>Built by Vikranth Reddy · Fibonacci Algorithms Lab</footer>
+<footer>Built by Vikranth Reddy · Fibonacci Algorithms Lab<span class="fleet-legal" style="display:block;text-align:center;padding:10px 0;font-size:13px"><a href="/legal.html">Privacy · Terms</a></span>
+</footer>
 </div>
 <script>
 function fibIter(n){let a=0n,b=1n;for(let i=0n;i<n;i++){[a,b]=[b,a+b]}return a}
@@ -117,5 +120,6 @@ drawPhi();
 const io=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('on')),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
