@@ -7,7 +7,7 @@ from fibonacci import golden_ratio_approximations, _PHI
 
 terms = 25
 ratios = golden_ratio_approximations(terms)
-ns = list(range(3, terms + 2))
+ns = list(range(2, terms + 1))  # denominator n for each F(n+1)/F(n)
 
 plt.figure(figsize=(9, 5))
 plt.plot(ns, ratios, "o-", label="F(n+1) / F(n)")

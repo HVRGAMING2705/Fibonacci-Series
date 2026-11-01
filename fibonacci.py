@@ -108,5 +108,9 @@ def fib(n, method="iterative"):
 
 
 def golden_ratio_approximations(terms=20):
-    """F(n+1)/F(n) converging to phi — the golden ratio."""
+    """F(n+1)/F(n) for n = 2..terms, converging to phi.
+
+    Returns terms - 1 ratios (one per denominator n); callers that plot
+    against n must use ns = range(2, terms + 1), not range(3, terms + 2).
+    """
     return [fib_iterative(n + 1) / fib_iterative(n) for n in range(2, terms + 1)]

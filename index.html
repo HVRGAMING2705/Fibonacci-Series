@@ -80,9 +80,23 @@ button{min-height:44px}
 <p class="sub reveal">Naive recursion vs memoization vs iteration vs matrix exponentiation vs Binet's formula — race them live, then explore the golden ratio. Full benchmarked Python lab in the repo.</p>
 
 <div class="card reveal"><h3>Live race — fib(n)</h3>
-<div class="row"><input id="fib-n" type="number" value="30" min="1" max="40"><button onclick="race()">Race algorithms</button></div>
+<div class="row"><input id="fib-n" type="number" value="30" min="0" max="40"><button onclick="race()">Race algorithms</button></div>
+<p style="color:var(--mut);font-size:13px;margin-bottom:10px">Real timings, measured in your browser with performance.now() — nothing hardcoded. Naive recursion is skipped above n=35: it would freeze the tab (n=40 needs ~200M calls).</p>
+<div class="out" id="race-note" style="display:none"></div>
+<div class="out" id="race-history">Race history (saved on this device): —</div>
 <table><thead><tr><th>Algorithm</th><th>Complexity</th><th>Time</th><th>Result</th></tr></thead><tbody id="race-body">
 <tr><td colspan="4" style="color:var(--mut)">Press race…</td></tr></tbody></table></div>
+
+<div class="card reveal"><h3>Exact BigInt calculator — huge n</h3>
+<p style="color:var(--mut);font-size:14px;margin-bottom:10px">Matrix exponentiation with exact BigInt arithmetic — no float rounding, no 250-term cap. Try n = 1000 or 5000.</p>
+<div class="row"><input id="big-n" type="number" value="1000" min="0" max="5000"><button onclick="bigCalc()">Compute F(n) exactly</button></div>
+<div class="out" id="big-out">—</div></div>
+
+<div class="card reveal"><h3>Fibonacci retracement calculator</h3>
+<p style="color:var(--mut);font-size:14px;margin-bottom:10px">Custom swing high / low. Levels match retracement.py exactly (61.8% = 1/φ). Educational only — not financial advice.</p>
+<div class="row"><input id="ret-low" type="number" value="100" step="any" placeholder="Low"><input id="ret-high" type="number" value="200" step="any" placeholder="High"><select id="ret-dir" style="background:#0a0c10;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px 14px;font-size:15px"><option value="up">Uptrend pullback (from high)</option><option value="down">Downtrend bounce (from low)</option></select><button onclick="retrace()">Calculate levels</button></div>
+<table><thead><tr><th>Level</th><th>Price</th></tr></thead><tbody id="ret-body"><tr><td colspan="2" style="color:var(--mut)">Enter a swing and calculate…</td></tr></tbody></table>
+<div class="out" id="ret-out">—</div></div>
 
 <div class="card reveal"><h3>Golden ratio convergence</h3>
 <p style="color:var(--mut);font-size:14px;margin-bottom:6px">fib(n+1) / fib(n) → φ = 1.6180339887…</p>
@@ -94,7 +108,8 @@ button{min-height:44px}
 <a href="https://github.com/HVRGAMING2705/Fibonacci-Series/blob/main/fibonacci.py">fibonacci.py</a>
 <a href="https://github.com/HVRGAMING2705/Fibonacci-Series/blob/main/benchmark.py">benchmark.py</a>
 </div>
-<footer>Built by Vikranth Reddy · Fibonacci Algorithms Lab<span class="fleet-legal" style="display:block;text-align:center;padding:10px 0;font-size:13px"><a href="/legal.html">Privacy · Terms</a></span>
+<footer>Built by Vikranth Reddy · Fibonacci Algorithms Lab · v2.0 — production release<span class="fleet-legal" style="display:block;text-align:center;padding:10px 0;font-size:13px"><a href="/legal.html">Privacy · Terms</a></span>
+<p>Built by <a href="https://vikranthreddy.vercel.app">Vikranth Reddy</a></p>
 </footer>
 </div>
 <script>
@@ -103,20 +118,57 @@ function fibMatrix(n){function mul([[a,b],[c,d]],[[e,f],[g,h]]){return [[a*e+b*g
 function pw(m,p){let r=[[1n,0n],[0n,1n]];while(p>0n){if(p&1n)r=mul(r,m);m=mul(m,m);p>>=1n}return r}
 return n===0n?0n:pw([[1n,1n],[1n,0n]],n-1n)[0][0]}
 function fibNaive(n){return n<2?n:fibNaive(n-1)+fibNaive(n-2)}
-const memo={};function fibMemo(n){if(n<2)return BigInt(n);if(memo[n]!==undefined)return memo[n];return memo[n]=fibMemo(n-1)+fibMemo(n-2)}
-function race(){const n=parseInt(document.getElementById('fib-n').value)||30;const nb=BigInt(n);
-const rows=[];let t0=performance.now();const r1=fibNaive(n);rows.push(['Naive recursion','O(2ⁿ)',performance.now()-t0,r1]);
-t0=performance.now();const r2=fibMemo(nb);rows.push(['Memoized','O(n)',performance.now()-t0,r2]);
-t0=performance.now();const r3=fibIter(nb);rows.push(['Iterative','O(n)',performance.now()-t0,r3]);
-t0=performance.now();const r4=fibMatrix(nb);rows.push(['Matrix exponentiation','O(log n)',performance.now()-t0,r4]);
-document.getElementById('race-body').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td class="mono ${r[2]>50?'slow':'fast'}">${r[2].toFixed(3)} ms</td><td class="mono">${r[3].toString().slice(0,24)}${r[3].toString().length>24?'…':''}</td></tr>`).join('');}
-function drawPhi(){const c=document.getElementById('phi'),x=c.getContext('2d');const W=c.width,H=c.height;const PHI=1.618033988749895;
-let a=0,b=1;const pts=[];for(let i=2;i<=30;i++){[a,b]=[b,a+b];pts.push(b/a)}
-x.clearRect(0,0,W,H);x.strokeStyle='rgba(184,245,61,.25)';x.setLineDash([6,6]);const yPhi=H-((PHI-1.5)/0.2)*H;x.beginPath();x.moveTo(0,yPhi);x.lineTo(W,yPhi);x.stroke();x.setLineDash([]);
-x.strokeStyle='#b8f53d';x.lineWidth=2.5;x.beginPath();pts.forEach((p,i)=>{const px=(i/(pts.length-1))*W,py=H-((p-1.5)/0.2)*H;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
-x.fillStyle='#9aa0a6';x.font='12px sans-serif';x.fillText('φ = 1.61803…',10,yPhi-8);
-document.getElementById('phi-out').innerHTML='fib(31)/fib(30) = <b>'+pts[pts.length-1].toFixed(12)+'</b> → converging on φ';}
-drawPhi();
+const memoM={0:0n,1:1n};function fibMemo(n){if(n<2)return BigInt(n);if(memoM[n]!==undefined)return memoM[n];return memoM[n]=fibMemo(n-1)+fibMemo(n-2)}
+const PHI=(1+Math.sqrt(5))/2, PSI=(1-Math.sqrt(5))/2;
+function fibBinet(n){return Math.round((Math.pow(PHI,n)-Math.pow(PSI,n))/Math.sqrt(5))}
+function fmtBig(v){const t=v.toString();return t.length>60?t.slice(0,60)+'… ('+t.length+' digits)':t}
+function loadHist(){try{return JSON.parse(localStorage.getItem('fib-race-history')||'[]')}catch(e){return []}}
+function saveHist(entry){const h=loadHist();h.unshift(entry);localStorage.setItem('fib-race-history',JSON.stringify(h.slice(0,10)));renderHist()}
+function renderHist(){const el=document.getElementById('race-history');if(!el)return;const h=loadHist();
+  el.innerHTML=h.length?('Race history (saved on this device):<br>'+h.map(x=>`n=${x.n} · fastest: ${x.fast} (${x.ms} ms) · ${x.time}`).join('<br>')):'Race history (saved on this device): —';}
+function race(){const n=parseInt(document.getElementById('fib-n').value);
+  if(isNaN(n)||n<0||n>40){document.getElementById('race-body').innerHTML='<tr><td colspan="4">Enter n between 0 and 40.</td></tr>';return}
+  const nb=BigInt(n), rows=[];
+  try{
+    if(n>35){rows.push(['Naive recursion','O(φⁿ)','skipped','n>35 would freeze the tab (~200M calls at n=40)'])}
+    else{let t0=performance.now();const r1=fibNaive(n);rows.push(['Naive recursion','O(φⁿ)',(performance.now()-t0).toFixed(3)+' ms',fmtBig(BigInt(r1))])}
+    let t0=performance.now();const r2=fibMemo(n);rows.push(['Memoized','O(n)',(performance.now()-t0).toFixed(3)+' ms',fmtBig(r2)]);
+    t0=performance.now();const r3=fibIter(nb);rows.push(['Iterative','O(n)',(performance.now()-t0).toFixed(3)+' ms',fmtBig(r3)]);
+    t0=performance.now();const r4=fibMatrix(nb);rows.push(['Matrix exponentiation','O(log n)',(performance.now()-t0).toFixed(3)+' ms',fmtBig(r4)]);
+    t0=performance.now();const r5=fibBinet(n);const exact=n<=70;
+    rows.push(['Binet\'s formula','O(1)',(performance.now()-t0).toFixed(3)+' ms',r5.toLocaleString('en-US')+(exact?'':' (approx — float breaks past n=70)')]);
+    const agree=(r2===r3&&r3===r4).toString();
+    document.getElementById('race-body').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td class="mono">${r[2]}</td><td class="mono">${r[3]}</td></tr>`).join('');
+    const note=document.getElementById('race-note');note.style.display='block';
+    note.innerHTML='All exact methods agree: <b>'+agree+'</b>'+(exact?'':' · Binet row is approximate at this n (see Python: exact only through n=70).');
+    const timed=rows.filter(r=>r[2].endsWith('ms')).map(r=>[r[0],parseFloat(r[2])]).sort((a,b)=>a[1]-b[1]);
+    if(timed.length)saveHist({n:n,fast:timed[0][0],ms:timed[0][1].toFixed(3),time:new Date().toLocaleString()});
+  }catch(e){document.getElementById('race-body').innerHTML='<tr><td colspan="4">Race failed: '+e.message+'</td></tr>';}}
+function bigCalc(){const n=parseInt(document.getElementById('big-n').value);
+  const out=document.getElementById('big-out');
+  if(isNaN(n)||n<0||n>5000){out.textContent='Enter n between 0 and 5000.';return}
+  const t0=performance.now(),v=fibMatrix(BigInt(n)),ms=(performance.now()-t0).toFixed(3);
+  out.innerHTML='F('+n+') = <b>'+v.toString()+'</b><br>'+v.toString().length+' digits · matrix method · '+ms+' ms (measured in your browser)';
+  try{localStorage.setItem('fib-last-big-n',String(n))}catch(e){}}
+function retrace(){const low=parseFloat(document.getElementById('ret-low').value),high=parseFloat(document.getElementById('ret-high').value);
+  const dir=document.getElementById('ret-dir').value,body=document.getElementById('ret-body'),out=document.getElementById('ret-out');
+  if(isNaN(low)||isNaN(high)||high<=low){body.innerHTML='<tr><td colspan="2">Need high &gt; low.</td></tr>';out.textContent='—';return}
+  const range=high-low,levels=[['23.6%',0.236],['38.2%',0.382],['50.0%',0.5],['61.8%',1/PHI],['78.6%',0.786]];
+  const price=p=>dir==='up'?high-p*range:low+p*range;
+  body.innerHTML=levels.map(l=>`<tr><td>${l[0]}</td><td class="mono">${price(l[1]).toFixed(4)}</td></tr>`).join('');
+  const e1=dir==='up'?high+1.272*range:low-1.272*range, e2=dir==='up'?high+PHI*range:low-PHI*range;
+  out.innerHTML='Swing '+low+' → '+high+' (range '+range+') · Extensions: <b>127.2% = '+e1.toFixed(4)+'</b> · <b>161.8% = '+e2.toFixed(4)+'</b> · Educational only — not financial advice.';
+  try{localStorage.setItem('fib-retrace',JSON.stringify({low:low,high:high,dir:dir}))}catch(e){}}
+function drawPhi(){const c=document.getElementById('phi'),x=c.getContext('2d');const W=c.width,H=c.height;
+  let a=1,b=2;const pts=[];for(let n=2;n<=30;n++){pts.push(b/a);const nxt=a+b;a=b;b=nxt}
+  const lo=1.0,hi=2.1,y=p=>H-((p-lo)/(hi-lo))*H;
+  x.clearRect(0,0,W,H);x.strokeStyle='rgba(184,245,61,.25)';x.setLineDash([6,6]);const yPhi=y(PHI);x.beginPath();x.moveTo(0,yPhi);x.lineTo(W,yPhi);x.stroke();x.setLineDash([]);
+  x.strokeStyle='#b8f53d';x.lineWidth=2.5;x.beginPath();pts.forEach((p,i)=>{const px=(i/(pts.length-1))*W,py=y(p);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+  x.fillStyle='#9aa0a6';x.font='12px sans-serif';x.fillText('φ = 1.61803…',10,yPhi-8);
+  document.getElementById('phi-out').innerHTML='F(31)/F(30) = <b>'+pts[pts.length-1].toFixed(12)+'</b> · error vs φ = <b>'+Math.abs(pts[pts.length-1]-PHI).toExponential(2)+'</b> · first ratio F(3)/F(2) = 2.0';}
+drawPhi();renderHist();
+try{const r=JSON.parse(localStorage.getItem('fib-retrace')||'null');if(r){document.getElementById('ret-low').value=r.low;document.getElementById('ret-high').value=r.high;document.getElementById('ret-dir').value=r.dir;retrace()}
+const bn=localStorage.getItem('fib-last-big-n');if(bn)document.getElementById('big-n').value=bn;}catch(e){}
 const io=new IntersectionObserver(e=>e.forEach(x=>x.isIntersecting&&x.target.classList.add('on')),{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>

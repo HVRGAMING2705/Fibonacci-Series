@@ -7,7 +7,7 @@ specimen for showing how algorithm choice dominates performance.
 
 | Method | Time | Space | Exact? | Notes |
 |---|---|---|---|---|
-| Naive recursion | O(phi^n) | O(n) stack | yes | ~1.6M calls for n=30; ~2.7B for n=50 |
+| Naive recursion | O(phi^n) | O(n) stack | yes | ~2.69M calls for n=30; ~40.7B for n=50 |
 | Memoized (top-down DP) | O(n) | O(n) | yes | each F(k) computed once |
 | Iterative (bottom-up) | O(n) | O(1) | yes | the practical default |
 | Matrix exponentiation | O(log n) | O(1) | yes | exact at any n via [[1,1],[1,0]]^n |
